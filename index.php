@@ -15,7 +15,8 @@ session_start();
 $request = $_SERVER['REQUEST_URI'];
 $base_url = "http://localhost/task1/";
 $API_url = "http://localhost/task1/v1/";
-$_SESSION['message'] = '';
+$_SESSION['todo_status'] ="";
+
 
 
 
@@ -34,6 +35,9 @@ $_SESSION['message'] = '';
 
                 //IF USER IS LOGGED IN, GET USER DATA--------------------------------->>> 
                 else {     
+
+
+                    $_SESSION['todo_status'] =  '<p style="text-align:left; color:gray; font-size:13px">List of Active Todos</p>';
                     $submited_data =   array(
                                         'user_id' => $_SESSION['user_id'],
                                         'todo_status' => 'active'
@@ -44,6 +48,41 @@ $_SESSION['message'] = '';
                  }
                   //IF USER IS LOGGED IN, GET USER DATA-------------------------------<<< 
             break;
+
+
+
+
+            case '/task1/completed':
+    
+                    //LOGIN AUTHENTICATION------------------------------------------------>>>
+                    if((!isset($_SESSION['user_id']))){
+                        require __DIR__ . '/views/signin.php';
+                     }
+                    //LOGIN AUTHENTICATION------------------------------------------------<<<  
+    
+    
+                    //IF USER IS LOGGED IN, GET USER DATA--------------------------------->>> 
+                    else {     
+    
+    
+                        $_SESSION['todo_status'] =  '<p style="text-align:left; color:gray; font-size:13px">List of Completed Todos</p>';
+                        $submited_data =   array(
+                                            'user_id' => $_SESSION['user_id'],
+                                            'todo_status' => 'completed'
+                                            ); 
+                                                              
+                                $_SESSION['list_of_todos'] = submit_data($API_url.'get_todos.php', $submited_data);
+                                require __DIR__ . '/views/home.php';
+                     }
+                      //IF USER IS LOGGED IN, GET USER DATA-------------------------------<<< 
+             break;
+    
+
+                
+
+
+
+
 
 
             case '/task1/signin'://handles user signin page 
@@ -73,11 +112,56 @@ $_SESSION['message'] = '';
                         //SETTING NEW TODO DATA IN ARRAY AND CALLING SUMMIT FUNCTION---<<<
 
 
-                            //SETTING MESSAGE FOR NEW TODO SUCCESS OR FAILURE ---------->>>    
+                            //SETTING MESSAGE FOR NEW TODO SUCCESS OR FAILURE ---------->>>
+                            $_SESSION['notify_time_keeper'] = time();
                             $_SESSION['message'] =  $response['message'];
                                 header('location: account');
                             //SETTING MESSAGE FOR NEW TODO SUCCESS OR FAILURE ---------->>>   
             break;  
+
+
+
+
+
+
+
+            case '/task1/delete'://delete todo item 
+                        //SETTING DELETE TODO DATA IN ARRAY AND CALLING SUMMIT FUNCTION--->>>
+                            $submited_data =   array(
+                                    'todo_id' => $_POST['todo_id'],
+                            );
+                            $response = submit_data($API_url.'delete_todo.php', $submited_data);
+                        //SETTING DELETE TODO DATA IN ARRAY AND CALLING SUMMIT FUNCTION--<<<
+
+
+                            //SETTING MESSAGE FOR DELETED TODO SUCCESS OR 
+                            $_SESSION['notify_time_keeper'] = time();
+                            $_SESSION['message'] =  $response['message'];
+                                header('location: account');
+                            //SETTING MESSAGE FOR DELETED TODO SUCCESS OR FAILURE -------<<<   
+            break;  
+
+
+
+
+            case '/task1/done'://update todo as completed
+                        //SETTING COMPLETED TODO DATA IN ARRAY--------------------------->>>
+                            $submited_data =   array(
+                                    'todo_id' => $_POST['todo_id'],
+                            );
+                            $response = submit_data($API_url.'done_todo.php', $submited_data);
+                         //SETTING COMPLETED TODO DATA IN ARRAY--------------------------<<<
+
+
+                            //SETTING MESSAGE FOR COMPLETED TODO SUCCESS OR FAILURE ----->>> 
+                            $_SESSION['notify_time_keeper'] = time();
+                            $_SESSION['message'] =  $response['message'];
+                                header('location: account');
+                            //SETTING MESSAGE FOR COMPLETED TODO SUCCESS OR FAILURE -----<<<   
+            break;  
+
+
+
 
 
 
@@ -93,6 +177,7 @@ $_SESSION['message'] = '';
 
                             //IF REGISTRATION IS SUCCESSFUL ---------------------------->>>    
                             if ($response['status'] == 201) {
+                                $_SESSION['notify_time_keeper'] = time();
                                 $_SESSION['message'] =  $response['message'];
                                 require __DIR__ . '/views/signin.php';
                             }
@@ -100,6 +185,7 @@ $_SESSION['message'] = '';
 
                             //IF REGISTRATION IS FAILS --------------------------------->>>   
                             else {
+                                $_SESSION['notify_time_keeper'] = time();
                                 $_SESSION['message'] =  $response['message'];
                                 require __DIR__ . '/views/signup.php';
                             }
@@ -128,6 +214,7 @@ $_SESSION['message'] = '';
 
                             //IF REGISTRATION IS FAILS --------------------------------->>>   
                             else {
+                                $_SESSION['notify_time_keeper'] = time();
                                 $_SESSION['message'] =  $response['message'];
                                 require __DIR__ . '/views/signin.php';
                             }
@@ -146,7 +233,7 @@ $_SESSION['message'] = '';
 
 
 
-//DATA SUBMISSION FUNCTION STARTS HERE  ---------------------------------------->>>
+//DATA SUBMISSION FUNCTION------------------------------------------------------>>>
         function submit_data($url, $submited_data)
         {
             //SPECIFYING METHOD AS POST AND JSON CONTENT TYPE  ----------------->>>  
@@ -165,4 +252,4 @@ $_SESSION['message'] = '';
             return json_decode($result, true);
             //CREATING CONTEXT STREAM/ SENDING DATA DECODING RESPONSE ----------<<<
         }
-//DATA SUBMISSION FUNCTION ENDS HERE -------------------------------------------<<<      
+//DATA SUBMISSION FUNCTION------------------------------------------------------>>>        
