@@ -7,11 +7,38 @@ require('header.php');
 <body>
   <div class="container box">
     <h2>Todos</h2>
-    <div class="message"><?php echo $_SESSION['message'];?></div>
+
+    <div class="message">
+      <?php
+    
+    
+    if(!isset( $_SESSION['message'] )){
+
+    }
+    else{
+        if(time() - $_SESSION['notify_time_keeper'] > 5){
+         }
+
+        else{ 
+            echo $_SESSION['message'];
+        }
+    } 
+    
+    
+    
+    ?>
+    
+  </div>
+  <div><?php echo $_SESSION['todo_status']  ?></div>
+
+
+
     <div class="card">
       <div class="card-body">
 
         <a href="" class="card-link" data-toggle="modal" data-target="#myModal">Add Todo</a>
+        <a href="completed" class="card-link">Completed</a>
+        <a href="account" class="card-link">active</a>
         <a href="logout" class="card-link">Logout</a>
       </div>
     </div>
@@ -25,12 +52,18 @@ require('header.php');
         $items_todo = '';
         if ($_SESSION['list_of_todos']['success'] == 1) {
           foreach ((array) $_SESSION['list_of_todos']['message'] as $item) { 
+             if ($item['status']=='active') {
+              $show_btn = "";
+             }
+             else {
+              $show_btn = "none";
+             }
               $items_todo .= '
                               <div class="card">
                               <div class="card-body">
                                 <p class="card-text todo_text">'.$item['todo'].'</p>
-                                 <button onclick="delete_todo(`'.$item['todo_id'].'`,`'.$item['todo'].'`)" data-toggle="modal" data-target="#delete_todo" type="button" class="delete_btn"> Delete</button>
-                                 <button onclick="done(`'.$item['todo_id'].'`,`'.$item['todo'].'`)" data-toggle="modal" data-target="#done_todo" type="button" class="done_btn"> Done</button>
+                                 <button style="display:'. $show_btn.'"  onclick="delete_todo(`'.$item['todo_id'].'`,`'.$item['todo'].'`)" data-toggle="modal" data-target="#delete_todo" type="button" class="delete_btn"> Delete</button>
+                                 <button style="display:'. $show_btn.'"  onclick="done(`'.$item['todo_id'].'`,`'.$item['todo'].'`)" data-toggle="modal" data-target="#done_todo" type="button" class="done_btn"> Done</button>
                               </div>
                             </div>
                             <br>
@@ -95,8 +128,8 @@ require('header.php');
           <br>
           <h3>Done?</h2>
           <p id="done_prompt" ></p>
-          <form action="add-todo" method="post">
-            <input type="text" id="done_todo_id" value="" style="display:none">
+          <form action="done" method="post">
+            <input type="text" id="done_todo_id" name="todo_id" value="" style="display:none">
             <button type="submit" class="btn btn-success" style="float:right">Done</button>
             <br>
             <br>
@@ -137,8 +170,8 @@ require('header.php');
         <br>
           <h3>Delete?</h2>
           <p id="delete_prompt" ></p>
-          <form action="add-todo" method="post">
-            <input type="text" id="delete_todo_id" value="" style="display:none">
+          <form action="delete" method="post">
+            <input type="text" id="delete_todo_id" name="todo_id" value="" style="display:none">
             <button type="submit" class="btn btn-danger" style="float:right">Delete</button>
             <br>
             <br>
