@@ -7,7 +7,32 @@ require('header.php');
 <body>
 
 <div class="container" style="max-width:500px; padding-top:100px">
-   <div class="message"><?php echo $_SESSION['message'];?></div>
+
+
+
+<div class="message">
+      <?php
+    
+    
+    if(!isset( $_SESSION['message'] )){
+
+    }
+    else{
+        if(time() - $_SESSION['notify_time_keeper'] > 5){
+         }
+
+        else{ 
+            echo $_SESSION['message'];
+        }
+    } 
+    
+    
+    
+    ?>
+    
+  </div>
+
+  
   <h2>Register </h2>
   <form action="register" method="post">
     <div class="form-group">
