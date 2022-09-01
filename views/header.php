@@ -28,5 +28,28 @@
             color:red;
             text-align:center;
         }
+        .todo_text{
+            color:#34495E;
+            font-size:15px;
+            margin-left:20px;
+        }
+        .delete_btn{
+            background-color:maroon;
+            color:#F5B7B1;
+            font-size:11px;
+            float:right;
+            margin-left:20px;
+            border-radius:7px;
+            border: 1px solid maroon;
+}
+        .done_btn{
+            background-color:#7DCEA0;
+            color:#fff;
+            font-size:11px;
+            float:right;
+            margin-left:20px;
+            border-radius:7px;
+            border: 1px solid #7DCEA0;
+        }
     </style>
 </head>
