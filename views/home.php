@@ -34,8 +34,7 @@ require('header.php');
 
 
     <div class="card">
-      <div class="card-body">
-
+      <div class="card-body" style="font-size:14px">
         <a href="" class="card-link" data-toggle="modal" data-target="#myModal">Add Todo</a>
         <a href="completed" class="card-link">Completed</a>
         <a href="account" class="card-link">active</a>
@@ -71,7 +70,7 @@ require('header.php');
           }
       }
       else{
-          $items_todo  = "You dont have any post yet";
+          $items_todo  = "You have nothing todo!";
       }
         
     echo   $items_todo;
@@ -170,7 +169,7 @@ require('header.php');
         <br>
           <h3>Delete?</h2>
           <p id="delete_prompt" ></p>
-          <form action="delete" method="post">
+          <form action="remove_todo" method="post">
             <input type="text" id="delete_todo_id" name="todo_id" value="" style="display:none">
             <button type="submit" class="btn btn-danger" style="float:right">Delete</button>
             <br>
