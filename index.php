@@ -16,6 +16,7 @@ $request = $_SERVER['REQUEST_URI'];
 $base_url = "http://localhost/task1/";
 $API_url = "http://localhost/task1/v1/";
 $_SESSION['todo_status'] ="";
+$_SESSION['notify_time_keeper'] = time();
 
 
 
@@ -25,6 +26,7 @@ $_SESSION['todo_status'] ="";
 
             case '/task1/':
             case '/task1/account':
+            case '/task1/active':
 
                 //LOGIN AUTHENTICATION------------------------------------------------>>>
                 if((!isset($_SESSION['user_id']))){
@@ -41,9 +43,24 @@ $_SESSION['todo_status'] ="";
                     $submited_data =   array(
                                         'user_id' => $_SESSION['user_id'],
                                         'todo_status' => 'active'
-                                        ); 
-                                                          
-                            $_SESSION['list_of_todos'] = submit_data($API_url.'get_todos.php', $submited_data);
+                                        );                                        
+                    $_SESSION['list_of_todos'] = submit_data($API_url.'get_todos.php', $submited_data);
+
+
+
+                   $submited_data_completed =   array(
+                                        'user_id' => $_SESSION['user_id'],
+                                        'todo_status' => 'completed'
+                                        );                
+                    $_SESSION['list_of_todos_completed'] = submit_data($API_url.'get_todos.php', $submited_data_completed);
+
+        
+
+
+
+                    $_SESSION['number_of_active_todos'] = count( $_SESSION['list_of_todos']['message']);
+                    $_SESSION['number_of_completed_todos'] = count( $_SESSION['list_of_todos_completed']['message']);
+                               
                             require __DIR__ . '/views/home.php';
                  }
                   //IF USER IS LOGGED IN, GET USER DATA-------------------------------<<< 
@@ -65,15 +82,27 @@ $_SESSION['todo_status'] ="";
                     else {     
     
     
-                        $_SESSION['todo_status'] =  '<p style="text-align:left; color:gray; font-size:13px">List of Completed Todos</p>';
+
+                        $_SESSION['todo_status'] =  '<p style="text-align:left; color:gray; font-size:13px">List of Active Todos</p>';
                         $submited_data =   array(
                                             'user_id' => $_SESSION['user_id'],
                                             'todo_status' => 'completed'
-                                            ); 
-                                                              
-                                $_SESSION['list_of_todos'] = submit_data($API_url.'get_todos.php', $submited_data);
-                                require __DIR__ . '/views/home.php';
-                     }
+                                            );                                        
+                        $_SESSION['list_of_todos'] = submit_data($API_url.'get_todos.php', $submited_data);
+    
+    
+    
+                       $submited_data_active =   array(
+                                            'user_id' => $_SESSION['user_id'],
+                                            'todo_status' => 'active'
+                                            );                
+                        $_SESSION['list_of_todos_active'] = submit_data($API_url.'get_todos.php', $submited_data_active);
+
+    
+                        $_SESSION['number_of_completed_todos'] = count( $_SESSION['list_of_todos']['message']);
+                        $_SESSION['number_of_active_todos'] = count( $_SESSION['list_of_todos_active']['message']); require __DIR__ . '/views/home.php';
+                        require __DIR__ . '/views/home.php';
+                    }
                       //IF USER IS LOGGED IN, GET USER DATA-------------------------------<<< 
              break;
     
@@ -87,9 +116,11 @@ $_SESSION['todo_status'] ="";
 
             case '/task1/signin'://handles user signin page 
                         require __DIR__ . '/views/signin.php';
+                        $_SESSION['message'] = '';
             break;
 
             case '/task1/signup'://handles user signup page
+                $_SESSION['message'] = '';
                         require __DIR__ . '/views/signup.php';
             break;  
                 
@@ -159,6 +190,31 @@ $_SESSION['todo_status'] ="";
                                 header('location: account');
                             //SETTING MESSAGE FOR COMPLETED TODO SUCCESS OR FAILURE -----<<<   
             break;  
+
+
+
+
+
+
+
+            
+            case '/task1/edit-todo'://Edit todo
+                        //SETTING EDIT TODO DATA IN ARRAY-------------------------------->>>
+                            $submited_data =   array(
+                                    'todo_id' => $_POST['todo_id'],
+                                    'new_todo_text' => $_POST['new_todo_text'],
+                            );
+                            $response = submit_data($API_url.'edit_todo.php', $submited_data);
+                        //SETTING EDIT TODO DATA IN ARRAY--------------------------------<<<
+
+
+                            //SETTING MESSAGE FOR EDIT TODO SUCCESS OR FAILURE ---------->>> 
+                            $_SESSION['notify_time_keeper'] = time();
+                            $_SESSION['message'] =  $response['message'];
+                                header('location: account');
+                            //SETTING MESSAGE FOR EDIT TODO SUCCESS OR FAILURE ----------<<<   
+            break;  
+
 
 
 
